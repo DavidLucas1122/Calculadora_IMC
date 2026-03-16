@@ -1,5 +1,7 @@
 package com.example.calculadora_imc
 
+import android.R.attr.contentDescription
+import android.R.attr.text
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,12 +24,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -50,6 +55,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.calculadora_imc.ui.theme.Calculadora_IMCTheme
+import com.example.calculadora_imc.ui.theme.calcularIMC
+import com.example.calculadora_imc.ui.theme.definirCategoria
+import com.example.calculadora_imc.ui.theme.definirCorCategoria
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,21 +91,6 @@ fun CalculadoraIMCScreen(modifier: Modifier = Modifier) {
         mutableStateOf(0.0)
     }
 
-    var classificacao = when {
-        imc in 0.0 .. 18.4 -> "Abaixo do Peso"
-        imc in 18.5 .. 24.9 -> "Peso Ideal"
-        imc in 25.0 .. 29.9 -> "Sobrepeso"
-        imc in 30.0 .. 34.9 -> "Obesidade I"
-        imc in 35.0 .. 39.9 -> "Obesidade II"
-        else -> "Obesidade III"
-
-    }
-
-    fun calcularIMC(altura: Double, peso: Double): Double {
-        var alturaMetros = altura / 100
-        var result = peso / (alturaMetros * alturaMetros)
-        return result
-    }
 
     var resultadoNumero by remember {
         mutableStateOf(0)
@@ -186,7 +179,15 @@ fun CalculadoraIMCScreen(modifier: Modifier = Modifier) {
                             unfocusedContainerColor = Color.White,
                             focusedBorderColor = colorResource(R.color.cor_app),
                             unfocusedBorderColor = colorResource(R.color.cor_app)
-                        )
+                        ),
+                                trailingIcon = {
+                                IconButton(onClick = { altura = "" }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "Limpar texto"
+                                    )
+                                }
+                        }
                     )
                     OutlinedTextField(
                         value = peso,
@@ -203,7 +204,15 @@ fun CalculadoraIMCScreen(modifier: Modifier = Modifier) {
                             unfocusedContainerColor = Color.White,
                             focusedBorderColor = colorResource(R.color.cor_app),
                             unfocusedBorderColor = colorResource(R.color.cor_app)
-                        )
+                        ),
+                        trailingIcon = {
+                            IconButton(onClick = { peso = "" }) {
+                                Icon(
+                                    imageVector = Icons.Default.Clear,
+                                    contentDescription = "Limpar texto"
+                                )
+                            }
+                        }
                     )
 
 
@@ -234,10 +243,8 @@ fun CalculadoraIMCScreen(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
 
                 .padding(horizontal = 30.dp)
-                .height(100.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.Green
-            ),
+                .height(100.dp)
+                .background(color = definirCorCategoria(imc)),
 
 
             shape = RoundedCornerShape(16.dp),
@@ -245,7 +252,8 @@ fun CalculadoraIMCScreen(modifier: Modifier = Modifier) {
 
             ) {
             Row(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
+                    .background(color = definirCorCategoria(imc)),
 
 
                 verticalAlignment = Alignment.CenterVertically,
@@ -259,7 +267,7 @@ fun CalculadoraIMCScreen(modifier: Modifier = Modifier) {
                 )
 
                 Text(
-                    text = classificacao,
+                    text = definirCategoria(imc),
                     color = Color.White,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
